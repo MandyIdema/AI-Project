@@ -29,9 +29,15 @@ public class Enemybehaviour : MonoBehaviour
 
     public bool followPassiveBehaviour;
 
+    //========= ATTACK PASSIVE ============
+
+    [SerializeField]
+    public static bool Attack;
+
 
     void Start()
     {
+        Attack = false;
     }
 
 
@@ -48,10 +54,14 @@ public class Enemybehaviour : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(this.transform.position, passive.transform.position, speed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(Vector3.forward * angle);
+            Attack = true;
+            Debug.Log("Attacking");
         }
         else
         {
             Wandering();
+            Debug.Log("Wandering around");
+
         }
 
   
@@ -60,7 +70,8 @@ public class Enemybehaviour : MonoBehaviour
 
     void Wandering()
     {
- 
+        Attack = false;
+        //AI wanders around the map
         transform.position = Vector2.MoveTowards(transform.position, wayPoint, speed * Time.deltaTime);
         if (Vector2.Distance(transform.position, wayPoint) < range)
         {
@@ -73,9 +84,4 @@ public class Enemybehaviour : MonoBehaviour
         wayPoint = new Vector2(Random.Range(-maxDistance, maxDistance), Random.Range(-maxDistance, maxDistance));
     }
 
-    void FollowPassive()
-    {
-
-
-    }
 }
