@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PassiveWander : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class PassiveWander : MonoBehaviour
 
     [SerializeField]
     float speed;
+
+    public bool Run;
 
     [SerializeField]
     float range;
@@ -30,9 +33,19 @@ public class PassiveWander : MonoBehaviour
 
     public float distanceBetween;
 
+    //======== ENERGY =============
+
+    public int maxEnergy;
+    private int currentEnergy;
+    public Image Energybar;
+
+
     void Start()
     {
         SetNewDestination();
+        Run = false;
+
+        currentEnergy = maxEnergy;
     }
 
     void FixedUpdate()
@@ -40,6 +53,7 @@ public class PassiveWander : MonoBehaviour
         //Flee from enemy
 
         Wandering();
+        RunCheck();
 
     }
 
@@ -74,4 +88,22 @@ public class PassiveWander : MonoBehaviour
             }
         }
 
+
+    void RunCheck()
+    {
+        Energybar.fillAmount = currentEnergy;
+
+        if (Enemybehaviour.Attack && currentEnergy >= 0)
+        {
+            speed = 10;
+            currentEnergy -= 10;
+        }
+        else
+        {
+            speed = 3;
+            Run = false;
+            Debug.Log("Not enough stamina");
+        }
     }
+
+}
