@@ -11,6 +11,11 @@ public class PassiveWander : MonoBehaviour
     [SerializeField]
     float speed;
 
+    [SerializeField]
+    float runningSpeed;
+
+    float originalSpeed;
+
     public bool Run;
 
     [SerializeField]
@@ -33,6 +38,8 @@ public class PassiveWander : MonoBehaviour
 
     public float distanceBetween;
 
+    public GameObject Target;
+
     //======== ENERGY =============
 
     public int maxEnergy;
@@ -46,14 +53,44 @@ public class PassiveWander : MonoBehaviour
         Run = false;
 
         currentEnergy = maxEnergy;
+
+        originalSpeed = speed;
+        
+        
     }
 
-    void FixedUpdate()
+    void Update()
     {
+        EnergybarCheck();
+
+
         //Flee from enemy
 
-        Wandering();
-        RunCheck();
+        Target = FindClosestEnemy();
+
+        //Calculate the distance between the predator and prey
+        distance = Vector2.Distance(transform.position, Target.transform.position);
+
+        Vector2 direction = Target.transform.position - transform.position;
+        direction.Normalize();
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        //If the distance is small enough, RUN
+        if (distance < distanceBetween)
+        {
+            transform.position = Vector2.MoveTowards(this.transform.position, Target.transform.position, -speed * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(Vector3.forward * angle);
+            Debug.Log("Hunting");
+            Running();
+        }
+        else
+        {
+            //If you're not chasing then wander around :)
+            Wandering();
+            Debug.Log("Wandering around");
+        }
+
+
 
     }
 
@@ -89,21 +126,47 @@ public class PassiveWander : MonoBehaviour
         }
 
 
-    void RunCheck()
+    void EnergybarCheck()
     {
         Energybar.fillAmount = currentEnergy;
 
-        if (Enemybehaviour.Attack && currentEnergy >= 0)
+ 
+    }
+
+    void Running()
+    {
+        if (currentEnergy >= 0)
         {
-            speed = 10;
-            currentEnergy -= 10;
+            speed = runningSpeed;
+            currentEnergy -= 1;
         }
         else
         {
-            speed = 3;
+            //Returning to the originalspeed
+            speed = originalSpeed;
             Run = false;
             Debug.Log("Not enough stamina");
         }
+    }
+
+    public GameObject FindClosestEnemy()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("Agressive");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
     }
 
 }

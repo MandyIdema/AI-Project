@@ -7,86 +7,60 @@ public class Health : MonoBehaviour
 {
     //======== HEALTH =============
     public int maxHealth;
+
+    [SerializeField]
     private int currentHealth;
-
-
-    //======== ENERGY =============
-
-    public int maxEnergy;
-    private int currentEnergy;
-    public Image Energybar;
-
-    float totalDistance;
-    Vector2 oldpos;
-    Vector2 Currentpos;
-
-
     public Image healthbar;
+
+
 
     void Start()
     {
         currentHealth = maxHealth;
-        currentEnergy = maxEnergy;
-
-        oldpos = transform.position;
+        
         
     }
 
     void FixedUpdate()
     {
         TakeDamage();
-        Damage();
 
-        Currentpos = transform.position;
-        oldpos = transform.position;
+
     }
 
     void TakeDamage()
     {
 
-        if(currentHealth <= 0)
+        if(this.currentHealth <= 0)
         {
             Death();
         }
 
-        healthbar.fillAmount = currentHealth / 100f;
+        healthbar.fillAmount = this.currentHealth / 100f;
         
     }
 
     void Death()
     {
-        this.gameObject.transform.position = new Vector2(30,30);
+        Destroy(this.gameObject);
 
-        // Destroy(this.gameObject);
+     //Destroy
         print("I died :(");
     }
 
-    void Damage()
+    private void OnCollisionStay2D(Collision2D collision)
     {
-
-        if (this.gameObject.tag == "Passive")
+       
+        if (collision.gameObject.tag == ("Agressive"))
         {
-            if (Enemybehaviour.Attack)
-            {
-                currentHealth -= 10;
-            }
-        }
+            currentHealth -= 10;
+            Debug.Log("Collided");
 
+        }
     }
 
 
 
-    public void EnergyUse()
-    {
-        if(currentEnergy  >= 0)
-        {
-            currentEnergy -= 10;
-            Energybar.fillAmount = currentEnergy;
-        }
-        else
-        {
-            Debug.Log("Not enough stamina");
-        }
-    }
+
 
 }

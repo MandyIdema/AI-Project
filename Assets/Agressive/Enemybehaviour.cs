@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class Enemybehaviour : MonoBehaviour
 {
@@ -21,8 +22,10 @@ public class Enemybehaviour : MonoBehaviour
     public bool wanderingBehaviour;
 
     //========= FOLLOW PASSIVE ============
-    [SerializeField]
-    public GameObject passive;
+
+    public List<GameObject> passiveObjects = new List<GameObject>();
+
+    [SerializeField] private Transform[] passiveTransforms;
 
     private float distance;
 
@@ -35,6 +38,8 @@ public class Enemybehaviour : MonoBehaviour
     [SerializeField]
     public static bool Attack;
 
+    public GameObject Target;
+
 
     //======== ENERGY =============
 
@@ -42,32 +47,40 @@ public class Enemybehaviour : MonoBehaviour
     private int currentEnergy;
     public Image Energybar;
 
+    
+
 
     void Start()
     {
-        Attack = false;
-        SetNewDestination();
+  
     }
 
 
     void Update()
     {
-        //Follow the passive object
-        distance = Vector2.Distance(transform.position, passive.transform.position);
-        Vector2 direction = passive.transform.position - transform.position;
+        
+        Target = FindClosestPassive();
+
+        addPassivetoList();
+
+        //Calculate the distance between the predator and prey
+        distance = Vector2.Distance(transform.position, Target.transform.position);
+
+        Vector2 direction = Target.transform.position - transform.position;
         direction.Normalize();
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        print(passive.transform.position);
-        if ((distance < distanceBetween) && passive)
+        //If the distance is small enough, chase the prey
+        if (distance < distanceBetween)
         {
-            transform.position = Vector2.MoveTowards(this.transform.position, passive.transform.position, speed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(this.transform.position, Target.transform.position, speed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(Vector3.forward * angle);
             Attack = true;
             Debug.Log("Hunting");
         }
         else
         {
+            //If you're not chasing then wander around :)
             Wandering();
             Debug.Log("Wandering around");
         }
@@ -108,5 +121,38 @@ public class Enemybehaviour : MonoBehaviour
             Debug.Log("Not enough stamina");
         }
     }
+
+    void addPassivetoList()
+    {
+        foreach (GameObject passive in GameObject.FindGameObjectsWithTag("Passive"))
+        {
+            if (!passiveObjects.Contains(passive)){
+                passiveObjects.Add(passive);
+            }
+        }
+
+    }
+
+    public GameObject FindClosestPassive()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("Passive");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
+    }
+
+
 
 }
