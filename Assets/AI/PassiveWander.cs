@@ -42,8 +42,8 @@ public class PassiveWander : MonoBehaviour
 
     //======== ENERGY =============
 
-    public int maxEnergy;
-    private int currentEnergy;
+    public float maxEnergy;
+    private float currentEnergy;
     public Image Energybar;
 
 
@@ -87,6 +87,7 @@ public class PassiveWander : MonoBehaviour
         {
             //If you're not chasing then wander around :)
             Wandering();
+            regenerateEnergy();
             Debug.Log("Wandering around");
         }
 
@@ -129,8 +130,14 @@ public class PassiveWander : MonoBehaviour
     void EnergybarCheck()
     {
         Energybar.fillAmount = currentEnergy;
+    }
 
- 
+    void regenerateEnergy()
+    {
+        if (currentEnergy < maxEnergy)
+        {
+            currentEnergy += 1f * Time.deltaTime;
+        }
     }
 
     void Running()
@@ -138,7 +145,7 @@ public class PassiveWander : MonoBehaviour
         if (currentEnergy >= 0)
         {
             speed = runningSpeed;
-            currentEnergy -= 1;
+            currentEnergy -= 1f * Time.deltaTime;
         }
         else
         {

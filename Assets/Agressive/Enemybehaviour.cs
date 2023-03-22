@@ -43,21 +43,33 @@ public class Enemybehaviour : MonoBehaviour
 
     //======== ENERGY =============
 
-    public int maxEnergy;
-    private int currentEnergy;
+    public float maxEnergy;
+    private float currentEnergy;
     public Image Energybar;
 
-    
+    [SerializeField]
+    float runningSpeed;
+
+    float originalSpeed;
+
+    //======== HUNGER =============
+    public float maxHunger;
+    private float currentHunger;
+    public Image Hungerbar;
 
 
     void Start()
     {
-  
+
+        currentEnergy = maxEnergy;
+
+        originalSpeed = speed;
     }
 
 
     void Update()
     {
+        barCheck();
         
         Target = FindClosestPassive();
 
@@ -76,12 +88,15 @@ public class Enemybehaviour : MonoBehaviour
             transform.position = Vector2.MoveTowards(this.transform.position, Target.transform.position, speed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(Vector3.forward * angle);
             Attack = true;
+            Running();
             Debug.Log("Hunting");
+            barCheck();
         }
         else
         {
             //If you're not chasing then wander around :)
             Wandering();
+            regenerateEnergy();
             Debug.Log("Wandering around");
         }
 
@@ -91,6 +106,7 @@ public class Enemybehaviour : MonoBehaviour
 
     void Wandering()
     {
+        speed = originalSpeed;
         Attack = false;
         //AI wanders around the map
         transform.position = Vector2.MoveTowards(transform.position, wayPoint, speed * Time.deltaTime);
@@ -105,19 +121,38 @@ public class Enemybehaviour : MonoBehaviour
         wayPoint = new Vector2(Random.Range(-maxDistance, maxDistance), Random.Range(-maxDistance, maxDistance));
     }
 
-    void RunCheck()
-    {
-        Energybar.fillAmount = currentEnergy;
 
-        if (Attack && currentEnergy >= 0)
+    void barCheck()
+    {
+        Energybar.fillAmount = currentEnergy / maxEnergy;
+        Hungerbar.fillAmount = currentHunger / currentHunger;
+    }
+
+    void hungerDecrease()
+    {
+        currentHunger -= 1f * Time.deltaTime;
+    }
+
+    void regenerateEnergy()
+    {
+        if(currentEnergy < maxEnergy)
         {
-            speed = 10;
-            currentEnergy -= 10;
+            currentEnergy += 1f * Time.deltaTime;
+        }
+    }
+
+    void Running()
+    {
+        if (currentEnergy >= 0)
+        {
+            speed = runningSpeed;
+            currentEnergy -= 10f * Time.deltaTime;
+            print(currentEnergy);
         }
         else
         {
-            speed = 3;
-            Attack = false;
+            //Returning to the originalspeed
+            speed = originalSpeed;
             Debug.Log("Not enough stamina");
         }
     }
