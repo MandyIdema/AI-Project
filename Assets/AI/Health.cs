@@ -9,7 +9,7 @@ public class Health : MonoBehaviour
     public int maxHealth;
 
     [SerializeField]
-    private int currentHealth;
+    private float currentHealth;
     public Image healthbar;
 
 
@@ -36,7 +36,7 @@ public class Health : MonoBehaviour
             Death();
         }
 
-        healthbar.fillAmount = this.currentHealth / 100f;
+        healthbar.fillAmount = this.currentHealth / maxHealth;
         
     }
 
@@ -53,7 +53,7 @@ public class Health : MonoBehaviour
        
         if (collision.gameObject.tag == ("Agressive"))
         {
-            currentHealth -= 10;
+            currentHealth -= 5f * Time.deltaTime;
             Debug.Log("Collided");
 
         }

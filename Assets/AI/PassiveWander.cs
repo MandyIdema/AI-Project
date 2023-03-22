@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class PassiveWander : MonoBehaviour
 {
+    [Header("--- Movement ---")]
 
     //======== WANDERING =============
 
@@ -30,6 +31,9 @@ public class PassiveWander : MonoBehaviour
 
     public bool wanderingBehaviour;
 
+
+    [Header("--- Fleeing ---")]
+
     //======== ENEMY =============
 
     public GameObject Enemy;
@@ -40,28 +44,61 @@ public class PassiveWander : MonoBehaviour
 
     public GameObject Target;
 
+    [Header("--- Health ---")]
+
+    //======== HEALTH =============
+    public float maxHealth;
+    public float Damage;
+
+    [SerializeField]
+    private float currentHealth;
+    public Image healthbar;
+
+
+    [Header("--- Energy ---")]
     //======== ENERGY =============
 
     public float maxEnergy;
     private float currentEnergy;
     public Image Energybar;
 
+    public float Stamina;
+    public float regenerateStamina;
+
+    [Header("--- Hunger ---")]
+
+    //======== HUNGER =============
+    public float maxHunger;
+    private float currentHunger;
+    public Image Hungerbar;
+
+    public float minimumHungerlevel;
+    public float hungryLevel;
+
 
     void Start()
     {
         SetNewDestination();
-        Run = false;
+
+        currentHunger = maxHunger;
+
+        currentHealth = maxHealth;
 
         currentEnergy = maxEnergy;
 
         originalSpeed = speed;
-        
-        
+
+        Run = false;
+
     }
 
     void Update()
     {
-        EnergybarCheck();
+        barCheck();
+
+        hungerDecrease();
+
+        TakeDamage();
 
 
         //Flee from enemy
@@ -127,16 +164,57 @@ public class PassiveWander : MonoBehaviour
         }
 
 
-    void EnergybarCheck()
+    void barCheck()
     {
-        Energybar.fillAmount = currentEnergy;
+        Energybar.fillAmount = currentEnergy / maxEnergy;
+        Hungerbar.fillAmount = currentHunger / maxHunger;
+        healthbar.fillAmount = currentHealth / maxHealth;
+    }
+
+    void TakeDamage()
+    {
+
+        if (this.currentHealth <= 0)
+        {
+            Death();
+        }
+
+        if (currentHunger < 0)
+        {
+            currentHealth -= Damage * Time.deltaTime;
+        }
+
+    }
+
+    void Death()
+    {
+        Destroy(this.gameObject);
+
+        //Destroy
+        print("I died :(");
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+
+        if (collision.gameObject.tag == ("Agressive"))
+        {
+            currentHealth -= Damage * Time.deltaTime;
+            Debug.Log("Collided");
+
+        }
+    }
+
+    void hungerDecrease()
+    {
+        currentHunger -= hungryLevel * Time.deltaTime;
     }
 
     void regenerateEnergy()
     {
         if (currentEnergy < maxEnergy)
         {
-            currentEnergy += 1f * Time.deltaTime;
+            currentEnergy += Stamina * Time.deltaTime;
         }
     }
 
@@ -145,7 +223,7 @@ public class PassiveWander : MonoBehaviour
         if (currentEnergy >= 0)
         {
             speed = runningSpeed;
-            currentEnergy -= 1f * Time.deltaTime;
+            currentEnergy -= regenerateStamina * Time.deltaTime;
         }
         else
         {

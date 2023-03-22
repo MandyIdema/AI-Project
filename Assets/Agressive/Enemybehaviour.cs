@@ -6,10 +6,16 @@ using System.Linq;
 
 public class Enemybehaviour : MonoBehaviour
 {
+    [Header("--- Movement ---")]
     //======== WANDERING =============
 
     [SerializeField]
     float speed;
+
+    [SerializeField]
+    float runningSpeed;
+
+    float originalSpeed;
 
     [SerializeField]
     float range;
@@ -20,6 +26,8 @@ public class Enemybehaviour : MonoBehaviour
     Vector2 wayPoint;
 
     public bool wanderingBehaviour;
+
+    [Header("--- Chasing ---")]
 
     //========= FOLLOW PASSIVE ============
 
@@ -37,9 +45,22 @@ public class Enemybehaviour : MonoBehaviour
 
     [SerializeField]
     public static bool Attack;
+    public float AttackPower;
 
     public GameObject Target;
 
+    [Header("--- Health ---")]
+    //======== HEALTH =============
+    public float maxHealth;
+    public float Damage;
+
+    [SerializeField]
+    private float currentHealth;
+    public Image healthbar;
+
+
+
+    [Header("--- Energy ---")]
 
     //======== ENERGY =============
 
@@ -47,21 +68,29 @@ public class Enemybehaviour : MonoBehaviour
     private float currentEnergy;
     public Image Energybar;
 
-    [SerializeField]
-    float runningSpeed;
+    public float Stamina;
+    public float regenerateStamina;
 
-    float originalSpeed;
+    [Header("--- Hunger ---")]
 
     //======== HUNGER =============
     public float maxHunger;
     private float currentHunger;
     public Image Hungerbar;
 
+    public float minimumHungerlevel;
+    public float hungryLevel;
+
 
     void Start()
     {
+        SetNewDestination();
+
+        currentHunger = maxHunger;
 
         currentEnergy = maxEnergy;
+
+        currentHealth = maxHealth;
 
         originalSpeed = speed;
     }
@@ -75,6 +104,10 @@ public class Enemybehaviour : MonoBehaviour
 
         addPassivetoList();
 
+        hungerDecrease();
+
+        TakeDamage();
+
         //Calculate the distance between the predator and prey
         distance = Vector2.Distance(transform.position, Target.transform.position);
 
@@ -82,23 +115,26 @@ public class Enemybehaviour : MonoBehaviour
         direction.Normalize();
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
+
         //If the distance is small enough, chase the prey
-        if (distance < distanceBetween)
-        {
-            transform.position = Vector2.MoveTowards(this.transform.position, Target.transform.position, speed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(Vector3.forward * angle);
-            Attack = true;
-            Running();
-            Debug.Log("Hunting");
-            barCheck();
-        }
-        else
-        {
-            //If you're not chasing then wander around :)
-            Wandering();
-            regenerateEnergy();
-            Debug.Log("Wandering around");
-        }
+        //The predator needs to be hungry as well in order to hunt (or else there is no use for hunting)
+
+             if (distance < distanceBetween && currentHunger < minimumHungerlevel) 
+            {
+                transform.position = Vector2.MoveTowards(this.transform.position, Target.transform.position, speed * Time.deltaTime);
+                transform.rotation = Quaternion.Euler(Vector3.forward * angle);
+                Attack = true;
+                Running();
+                Debug.Log("Hunting");
+            }
+            else
+            {
+                //If you're not chasing then wander around :)
+                Wandering();
+                regenerateEnergy();
+                Debug.Log("Wandering around");
+            }
+       
 
             
 
@@ -125,19 +161,49 @@ public class Enemybehaviour : MonoBehaviour
     void barCheck()
     {
         Energybar.fillAmount = currentEnergy / maxEnergy;
-        Hungerbar.fillAmount = currentHunger / currentHunger;
+        Hungerbar.fillAmount = currentHunger / maxHunger;
+        healthbar.fillAmount = currentHealth / maxHealth;
+    }
+
+    void TakeDamage()
+    {
+
+        if (this.currentHealth <= 0)
+        {
+            Death();
+        }
+
+        if(currentHunger < 0)
+        {
+            currentHealth -= Damage * Time.deltaTime;
+        }
+
+    }
+
+    void Death()
+    {
+        Destroy(this.gameObject);
+
+        //Destroy
+        print("I died :(");
     }
 
     void hungerDecrease()
     {
-        currentHunger -= 1f * Time.deltaTime;
+        currentHunger -= hungryLevel * Time.deltaTime;
+    }
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        currentHunger += AttackPower * Time.deltaTime;
     }
 
     void regenerateEnergy()
     {
         if(currentEnergy < maxEnergy)
         {
-            currentEnergy += 1f * Time.deltaTime;
+            currentEnergy += regenerateStamina * Time.deltaTime;
         }
     }
 
@@ -146,7 +212,7 @@ public class Enemybehaviour : MonoBehaviour
         if (currentEnergy >= 0)
         {
             speed = runningSpeed;
-            currentEnergy -= 10f * Time.deltaTime;
+            currentEnergy -= Stamina * Time.deltaTime;
             print(currentEnergy);
         }
         else
