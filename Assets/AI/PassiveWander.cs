@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PassiveWander : MonoBehaviour
 {
+  
+
     [Header("--- Movement ---")]
 
     //======== WANDERING =============
@@ -75,6 +77,11 @@ public class PassiveWander : MonoBehaviour
     public float minimumHungerlevel;
     public float hungryLevel;
 
+    public GameObject Plant;
+    public GameObject FoodTarget;
+    private float Fooddistance;
+    public float FooddistanceBetween;
+
 
     void Start()
     {
@@ -104,31 +111,59 @@ public class PassiveWander : MonoBehaviour
         //Flee from enemy
 
         Target = FindClosestEnemy();
+        FoodTarget = FindClosestFoodSource();
 
         //Calculate the distance between the predator and prey
         distance = Vector2.Distance(transform.position, Target.transform.position);
+        Fooddistance = Vector2.Distance(transform.position, FoodTarget.transform.position);
+
 
         Vector2 direction = Target.transform.position - transform.position;
         direction.Normalize();
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        Vector2 Fooddirection = FoodTarget.transform.position - transform.position;
+        Fooddirection.Normalize();
+        float Foodangle = Mathf.Atan2(Fooddirection.y, Fooddirection.x) * Mathf.Rad2Deg;
 
         //If the distance is small enough, RUN
         if (distance < distanceBetween)
         {
             transform.position = Vector2.MoveTowards(this.transform.position, Target.transform.position, -speed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(Vector3.forward * angle);
-            Debug.Log("Hunting");
+            Debug.Log("Fleeing");
             Running();
         }
         else
         {
-            //If you're not chasing then wander around :)
-            Wandering();
-            regenerateEnergy();
-            Debug.Log("Wandering around");
+            if(currentHunger > 75)
+            {
+                //If you're not chasing then wander around :)
+                Wandering();
+                regenerateEnergy();
+                Debug.Log("Wandering around");
+            }
+            else
+            {
+                if (Fooddistance < FooddistanceBetween)
+                {
+                    transform.position = Vector2.MoveTowards(this.transform.position, FoodTarget.transform.position, speed * Time.deltaTime);
+                    transform.rotation = Quaternion.Euler(Vector3.forward * Foodangle);
+                    Debug.Log("Searching for food");
+                }
+                else
+                {
+                    Wandering();
+                    regenerateEnergy();
+                    Debug.Log("Wandering around");
+                }
+            }
+        
         }
 
+  
 
+ 
 
     }
 
@@ -252,6 +287,42 @@ public class PassiveWander : MonoBehaviour
             }
         }
         return closest;
+    }
+
+    public GameObject FindClosestFoodSource()
+    {
+        GameObject[] gos;
+        gos = GameObject.FindGameObjectsWithTag("Plant");
+        GameObject closest = null;
+        float distance = Mathf.Infinity;
+        Vector3 position = transform.position;
+        foreach (GameObject go in gos)
+        {
+            Vector3 diff = go.transform.position - position;
+            float curDistance = diff.sqrMagnitude;
+            if (curDistance < distance)
+            {
+                closest = go;
+                distance = curDistance;
+            }
+        }
+        return closest;
+    }
+
+
+    // EATING PLANTS
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        FoodTarget = FindClosestFoodSource();
+
+        if (collision.gameObject.tag == ("Plant"))
+        {
+
+            Destroy(FoodTarget);
+            currentHunger += 50 * Time.deltaTime;
+
+        }
     }
 
 }

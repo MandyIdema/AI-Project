@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Passive
   - Agressive
+  - Plant
   layers:
   - Default
   - TransparentFX
