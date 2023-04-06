@@ -6,6 +6,15 @@ using System.Linq;
 
 public class Enemybehaviour : MonoBehaviour
 {
+    private float randomNumber;
+    //Determine a number between 0 and 1 to determine Male or Female
+
+    [Header("--- Gender specification ---")]
+
+    [Tooltip("50:50 ratio on gender specification. True = Female, False = Male")]
+    public bool Gender;
+    //True = female ------- False = Male
+
     [Header("--- Movement ---")]
     //======== WANDERING =============
 
@@ -84,6 +93,11 @@ public class Enemybehaviour : MonoBehaviour
 
     void Start()
     {
+        randomNumber = Random.Range(0, 100);
+        Debug.Log(randomNumber);
+
+        GenderSpecification();
+
         SetNewDestination();
 
         currentHunger = maxHunger;
@@ -133,11 +147,20 @@ public class Enemybehaviour : MonoBehaviour
                 Wandering();
                 regenerateEnergy();
                 Debug.Log("Wandering around");
-            }
-       
+            }  
 
-            
+    }
 
+    void GenderSpecification()
+    {
+        if (randomNumber > 50)
+        {
+            Gender = true; //FEMALE
+        }
+        else
+        {
+            Gender = false; // MALE
+        }
     }
 
     void Wandering()

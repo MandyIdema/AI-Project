@@ -28,5 +28,19 @@ public class PrefabInstantiator : MonoBehaviour
             Instantiate(Plant);
         }
 
+        if (GameObject.FindGameObjectsWithTag("Passive").Length < 5)
+        {
+            Instantiate(passiveobject);
+        }
+
+    }
+
+    void Spawn()
+    {
+        int spawnPointX = Random.Range(-300, 300);
+        int spawnPointY = Random.Range(-150, 360);
+        Vector3 spawnPosition = new Vector2(spawnPointX, spawnPointY);
+
+        Instantiate(Plant, spawnPosition, Quaternion.identity);
     }
 }

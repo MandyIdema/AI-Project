@@ -3,9 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PassiveWander : MonoBehaviour
+public class PassiveBehaviour : MonoBehaviour
 {
-  
+
+
+    private float randomNumber;
+    //Determine a number between 0 and 1 to determine Male or Female
+
+    [Header("--- Gender specification ---")]
+
+    [Tooltip("50:50 ratio on gender specification. True = Female, False = Male")]
+    public bool Gender;
+    //True = female ------- False = Male
+
+    public GameObject Bunny;
+
 
     [Header("--- Movement ---")]
 
@@ -85,6 +97,11 @@ public class PassiveWander : MonoBehaviour
 
     void Start()
     {
+        randomNumber = Random.Range(0, 100);
+        Debug.Log(randomNumber);
+
+        GenderSpecification();
+
         SetNewDestination();
 
         currentHunger = maxHunger;
@@ -161,11 +178,19 @@ public class PassiveWander : MonoBehaviour
         
         }
 
-  
-
- 
-
     }
+
+        void GenderSpecification()
+        {
+        if (randomNumber > 50)
+        {
+            Gender = true; //FEMALE
+        }
+        else
+        {
+            Gender = false; // MALE
+        }
+        }
 
         void Wandering()
         {
@@ -314,15 +339,37 @@ public class PassiveWander : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+
         FoodTarget = FindClosestFoodSource();
 
         if (collision.gameObject.tag == ("Plant"))
         {
 
             Destroy(FoodTarget);
-            currentHunger += 50 * Time.deltaTime;
+            currentHunger += 100 * Time.deltaTime;
 
         }
+
+        if (collision.gameObject.tag == ("Passive"))
+        {
+            if (Gender == true)
+            {
+                if (collision.gameObject.GetComponent<PassiveBehaviour>().Gender == false)
+                {
+                    Instantiate(Bunny, this.transform.position, this.transform.rotation);
+                }
+            }
+         
+            if(Gender == false)
+            {
+                if (collision.gameObject.GetComponent<PassiveBehaviour>().Gender == true)
+                {
+                    Instantiate(Bunny, this.transform.position, this.transform.rotation);
+                }
+            }
+            
+        }
     }
+
 
 }

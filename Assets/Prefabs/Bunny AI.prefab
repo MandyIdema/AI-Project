@@ -596,10 +596,9 @@ GameObject:
   - component: {fileID: 8390638906618724112}
   - component: {fileID: 8390638906618724110}
   - component: {fileID: 8390638906618724108}
-  - component: {fileID: 8390638906618724111}
   - component: {fileID: 8390638906618724109}
   m_Layer: 7
-  m_Name: Passive 1 1 1 1
+  m_Name: Bunny AI
   m_TagString: Passive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -664,8 +663,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.17221434, g: 0.79235315, b: 0.8113208, a: 1}
+  m_Sprite: {fileID: 21300000, guid: dfe3074a86824a24880744bafcf35430, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -687,6 +686,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdaf3ed2fe9dbe042bc49f21660f20c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Gender: 0
+  Bunny: {fileID: 8390638906618724115}
   speed: 3
   runningSpeed: 5
   Run: 0
@@ -707,7 +708,7 @@ MonoBehaviour:
   maxHunger: 100
   Hungerbar: {fileID: 6573536143708520591}
   minimumHungerlevel: 75
-  hungryLevel: 10
+  hungryLevel: 3
   Plant: {fileID: 8439478016802130327, guid: 5838397963891ac4596848807e1d574d, type: 3}
   FoodTarget: {fileID: 0}
   FooddistanceBetween: 15
@@ -727,21 +728,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &8390638906618724111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8390638906618724115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84a7048280e5c0c4a97fa39c48b625f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 0
-  healthbar: {fileID: 8390638905825668638}
 --- !u!50 &8390638906618724109
 Rigidbody2D:
   serializedVersion: 4
