@@ -17,26 +17,35 @@ public class PassiveBehaviour : MonoBehaviour
     //True = female ------- False = Male
 
     public GameObject Bunny;
+    public bool isCreated;
 
 
     [Header("--- Movement ---")]
 
     //======== WANDERING =============
 
+    [Tooltip("Sets the speed")]
     [SerializeField]
+    [Range(0.0f, 10.0f)]
     float speed;
 
+    [Tooltip("Sets the running speed")]
     [SerializeField]
+    [Range(0.0f, 10.0f)]
     float runningSpeed;
 
     float originalSpeed;
 
     public bool Run;
 
+    [Tooltip("Range in which the bunny can detect plants or has to run from a predator")]
     [SerializeField]
+    [Range(0.0f, 10.0f)]
     float range;
 
+    [Tooltip("Maximumdistance between the bunny and the predator")]
     [SerializeField]
+    [Range(0.0f, 10.0f)]
     float maxDistance;
 
     Vector2 wayPoint;
@@ -50,10 +59,13 @@ public class PassiveBehaviour : MonoBehaviour
 
     //======== ENEMY =============
 
+    
     public GameObject Enemy;
 
     private float distance;
 
+    [SerializeField]
+    [Range(0.0f, 10.0f)]
     public float distanceBetween;
 
     public GameObject Target;
@@ -61,7 +73,11 @@ public class PassiveBehaviour : MonoBehaviour
     [Header("--- Health ---")]
 
     //======== HEALTH =============
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float maxHealth;
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float Damage;
 
     [SerializeField]
@@ -72,33 +88,53 @@ public class PassiveBehaviour : MonoBehaviour
     [Header("--- Energy ---")]
     //======== ENERGY =============
 
+    [Tooltip("Maximum amount of energy")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float maxEnergy;
     private float currentEnergy;
     public Image Energybar;
 
+    [Tooltip("How fast the energy bar drains")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float Stamina;
+
+    [Tooltip("How fast your energy regenerates")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float regenerateStamina;
 
     [Header("--- Hunger ---")]
 
     //======== HUNGER =============
+    [Tooltip("Maximum amount of hunger")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float maxHunger;
     private float currentHunger;
     public Image Hungerbar;
 
+    [Tooltip("Minimum level the hunger needs to be in order to seek for food")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float minimumHungerlevel;
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float hungryLevel;
 
     public GameObject Plant;
     public GameObject FoodTarget;
     private float Fooddistance;
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float FooddistanceBetween;
 
 
     void Start()
     {
         randomNumber = Random.Range(0, 100);
-        Debug.Log(randomNumber);
+        //Get random number for gender specification
 
         GenderSpecification();
 
@@ -111,6 +147,8 @@ public class PassiveBehaviour : MonoBehaviour
         currentEnergy = maxEnergy;
 
         originalSpeed = speed;
+
+        isCreated = false;
 
         Run = false;
 
@@ -254,16 +292,7 @@ public class PassiveBehaviour : MonoBehaviour
         print("I died :(");
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
 
-        if (collision.gameObject.tag == ("Agressive"))
-        {
-            currentHealth -= Damage * Time.deltaTime;
-            Debug.Log("Collided");
-
-        }
-    }
 
     void hungerDecrease()
     {
@@ -337,8 +366,15 @@ public class PassiveBehaviour : MonoBehaviour
 
     // EATING PLANTS
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
+
+        if (collision.gameObject.tag == ("Agressive"))
+        {
+            currentHealth -= Damage * Time.deltaTime;
+            Debug.Log("Collided");
+
+        }
 
         FoodTarget = FindClosestFoodSource();
 
@@ -350,25 +386,37 @@ public class PassiveBehaviour : MonoBehaviour
 
         }
 
-        if (collision.gameObject.tag == ("Passive"))
+        //Spawn a new bunny BUT wait a few seconds before making a new one
+        //A female bunny can not pop out a child every second... that would be cruel
+        if(currentHunger > hungryLevel)
         {
-            if (Gender == true)
+            if (collision.gameObject.tag == ("Passive"))
             {
-                if (collision.gameObject.GetComponent<PassiveBehaviour>().Gender == false)
+                if (Gender == true)
                 {
-                    Instantiate(Bunny, this.transform.position, this.transform.rotation);
+                    if (collision.gameObject.GetComponent<PassiveBehaviour>().Gender == false)
+                    {
+                        StartCoroutine(waitTime(5.0f));
+                    }
                 }
+
             }
-         
-            if(Gender == false)
-            {
-                if (collision.gameObject.GetComponent<PassiveBehaviour>().Gender == true)
-                {
-                    Instantiate(Bunny, this.transform.position, this.transform.rotation);
-                }
-            }
-            
         }
+
+    }
+
+
+
+    IEnumerator waitTime(float time)
+    {
+        yield return new WaitForSeconds(time);
+        if (!isCreated)
+        {
+            Instantiate(Bunny, this.transform.position, this.transform.rotation);
+            isCreated = true;
+        }
+        
+
     }
 
 

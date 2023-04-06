@@ -4,10 +4,29 @@ using UnityEngine;
 
 public class PrefabInstantiator : MonoBehaviour
 {
+    [Header("--- Objects ---")]
     //Count the amount of objects
     public GameObject passiveobject;
     public GameObject enemyobject;
-    public GameObject Plant;
+    public GameObject plantobject;
+
+    [Header("--- Instantiate amount of objects ---")]
+
+    [Range(0.0f, 100.0f)]
+    public float Bunny;
+
+    [Range(0.0f, 100.0f)]
+    public float Fox;
+
+    [Range(0.0f, 100.0f)]
+    public float Plant;
+
+    private void Start()
+    {
+        SpawnBunny();
+        SpawnFox();
+        SpawnPlant();
+    }
 
 
     void Update()
@@ -25,22 +44,53 @@ public class PrefabInstantiator : MonoBehaviour
 
         if (GameObject.FindGameObjectsWithTag("Plant").Length < 1)
         {
-            Instantiate(Plant);
+            Spawn();
         }
 
-        if (GameObject.FindGameObjectsWithTag("Passive").Length < 5)
+    }
+
+    void SpawnBunny()
+    {
+
+        for (int i = 0; i < Bunny; i++)
         {
-            Instantiate(passiveobject);
+            Vector2 spawnPosition = new Vector2(Random.Range(-40.0f, 40.0f), Random.Range(-20.0f, 20.0f));
+            Instantiate(passiveobject, spawnPosition, Quaternion.identity);
+        }
+            
+    }
+
+    void SpawnFox()
+    {
+
+        
+
+        for (int i = 0; i < Fox; i++)
+        {
+            Vector2 spawnPosition = new Vector2(Random.Range(-40.0f, 40.0f), Random.Range(-20.0f, 20.0f));
+            Instantiate(enemyobject, spawnPosition, Quaternion.identity);
+        }
+
+    }
+
+    void SpawnPlant()
+    {
+
+
+        for (int i = 0; i < Plant; i++)
+        {
+            Vector2 spawnPosition = new Vector2(Random.Range(-40.0f, 40.0f), Random.Range(-20.0f, 20.0f));
+            Instantiate(plantobject, spawnPosition, Quaternion.identity);
         }
 
     }
 
     void Spawn()
     {
-        int spawnPointX = Random.Range(-300, 300);
-        int spawnPointY = Random.Range(-150, 360);
-        Vector3 spawnPosition = new Vector2(spawnPointX, spawnPointY);
+        int spawnPointX = Random.Range(-46, 21);
+        int spawnPointY = Random.Range(40, -20);
+        Vector2 spawnPosition = new Vector2(Random.Range(-40.0f, 40.0f), Random.Range(-20.0f, 20.0f));
 
-        Instantiate(Plant, spawnPosition, Quaternion.identity);
+        Instantiate(plantobject, spawnPosition, Quaternion.identity);
     }
 }

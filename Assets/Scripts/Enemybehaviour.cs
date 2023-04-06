@@ -15,21 +15,32 @@ public class Enemybehaviour : MonoBehaviour
     public bool Gender;
     //True = female ------- False = Male
 
+    public GameObject Fox;
+    public bool isCreated;
+
     [Header("--- Movement ---")]
     //======== WANDERING =============
 
+    [Tooltip("Sets the speed")]
     [SerializeField]
+    [Range(0.0f, 100.0f)]
     float speed;
 
+    [Tooltip("Sets the running speed")]
     [SerializeField]
+    [Range(0.0f, 100.0f)]
     float runningSpeed;
 
     float originalSpeed;
 
+    [Tooltip("Range in which the bunny can detect plants or has to run from a predator")]
     [SerializeField]
+    [Range(0.0f, 100.0f)]
     float range;
 
+    [Tooltip("Maximumdistance between the bunny and the predator")]
     [SerializeField]
+    [Range(0.0f, 100.0f)]
     float maxDistance;
 
     Vector2 wayPoint;
@@ -46,6 +57,8 @@ public class Enemybehaviour : MonoBehaviour
 
     private float distance;
 
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float distanceBetween;
 
     public bool followPassiveBehaviour;
@@ -54,13 +67,20 @@ public class Enemybehaviour : MonoBehaviour
 
     [SerializeField]
     public static bool Attack;
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float AttackPower;
 
     public GameObject Target;
 
     [Header("--- Health ---")]
     //======== HEALTH =============
+
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float maxHealth;
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float Damage;
 
     [SerializeField]
@@ -72,22 +92,39 @@ public class Enemybehaviour : MonoBehaviour
     [Header("--- Energy ---")]
 
     //======== ENERGY =============
-
+    [Tooltip("Maximum amount of energy")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float maxEnergy;
     private float currentEnergy;
     public Image Energybar;
 
+    [Tooltip("How fast the energy bar drains")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float Stamina;
+
+    [Tooltip("How fast your energy regenerates")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float regenerateStamina;
 
     [Header("--- Hunger ---")]
 
     //======== HUNGER =============
+    [Tooltip("Maximum amount of hunger")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float maxHunger;
     private float currentHunger;
     public Image Hungerbar;
 
+    [Tooltip("Minimum level the hunger needs to be in order to seek for food")]
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float minimumHungerlevel;
+    [SerializeField]
+    [Range(0.0f, 100.0f)]
     public float hungryLevel;
 
 
@@ -107,6 +144,8 @@ public class Enemybehaviour : MonoBehaviour
         currentHealth = maxHealth;
 
         originalSpeed = speed;
+
+        isCreated = false;
     }
 
 
@@ -217,10 +256,7 @@ public class Enemybehaviour : MonoBehaviour
     }
 
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        currentHunger += AttackPower * Time.deltaTime;
-    }
+    
 
     void regenerateEnergy()
     {
@@ -277,6 +313,37 @@ public class Enemybehaviour : MonoBehaviour
         return closest;
     }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        currentHunger += AttackPower * Time.deltaTime;
 
+        if (currentHunger > hungryLevel)
+        {
+            if (collision.gameObject.tag == ("Passive"))
+            {
+                if (Gender == true)
+                {
+                    if (collision.gameObject.GetComponent<PassiveBehaviour>().Gender == false)
+                    {
+                        StartCoroutine(waitTime(1.0f));
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    IEnumerator waitTime(float time)
+    {
+        yield return new WaitForSeconds(time);
+        if (!isCreated)
+        {
+            Instantiate(Fox, this.transform.position, this.transform.rotation);
+            isCreated = true;
+        }
+
+
+    }
 
 }
