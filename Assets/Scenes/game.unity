@@ -1120,9 +1120,9 @@ MonoBehaviour:
   passiveobject: {fileID: 8390638906618724115, guid: 5e80627f7e8cfe44b819c574f02db112, type: 3}
   enemyobject: {fileID: 3980897146978476997, guid: 85cabb3db32348d4eb914f16f204a700, type: 3}
   plantobject: {fileID: 8439478016802130327, guid: 5838397963891ac4596848807e1d574d, type: 3}
-  Bunny: 0
-  Fox: 0
-  Plant: 20
+  Bunny: 10
+  Fox: 2
+  Plant: 80
 --- !u!4 &1905503555
 Transform:
   m_ObjectHideFlags: 0

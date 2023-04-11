@@ -345,7 +345,7 @@ MonoBehaviour:
   AttackPower: 30
   Target: {fileID: 0}
   maxHealth: 100
-  Damage: 20
+  Damage: 40
   currentHealth: 0
   healthbar: {fileID: 3980897146957203437}
   maxEnergy: 100

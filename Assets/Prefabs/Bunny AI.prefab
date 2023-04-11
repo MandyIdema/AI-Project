@@ -693,7 +693,7 @@ MonoBehaviour:
   runningSpeed: 5
   Run: 0
   range: 0.5
-  maxDistance: 2
+  maxDistance: 10
   wanderingBehaviour: 0
   Enemy: {fileID: 0}
   distanceBetween: 2
@@ -709,7 +709,7 @@ MonoBehaviour:
   maxHunger: 100
   Hungerbar: {fileID: 6573536143708520591}
   minimumHungerlevel: 75
-  hungryLevel: 3
+  hungryLevel: 10
   Plant: {fileID: 8439478016802130327, guid: 5838397963891ac4596848807e1d574d, type: 3}
   FoodTarget: {fileID: 0}
   FooddistanceBetween: 15
