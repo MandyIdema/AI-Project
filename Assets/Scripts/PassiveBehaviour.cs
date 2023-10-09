@@ -195,6 +195,7 @@ public class PassiveBehaviour : MonoBehaviour
             {
                 //If you're not chasing then wander around :)
                 Wandering();
+                
                 regenerateEnergy();
                 Debug.Log("Wandering around");
             }
@@ -287,6 +288,7 @@ public class PassiveBehaviour : MonoBehaviour
     void Death()
     {
         Destroy(this.gameObject);
+        Instantiate(Plant, transform.position, transform.rotation);
 
         //Destroy
         print("I died :(");
@@ -382,7 +384,7 @@ public class PassiveBehaviour : MonoBehaviour
         {
 
             Destroy(FoodTarget);
-            currentHunger += 100 * Time.deltaTime;
+            currentHunger += 100;
 
         }
 
